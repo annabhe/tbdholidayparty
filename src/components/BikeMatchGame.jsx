@@ -95,7 +95,7 @@ export default function BikeMatchGame({ user }) {
                 <Card key={`bike-${i}`} p="s" mt="xs" withBorder
                   style={{minHeight: 100, display: 'flex', alignItems: 'center', justifyContent: 'center', margin:16}}>
                   <Image
-                    src={`/assets/bikes/bike-${String(i+1).padStart(2,'0')}.jpg`}
+                    src={`./public/assets/bikes/bike-${String(i+1).padStart(2,'0')}.jpg`}
                     height={100}
                     fit="contain"
                   />
