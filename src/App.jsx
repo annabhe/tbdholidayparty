@@ -1,5 +1,4 @@
-import { MantineProvider, Container, Stack, Accordion} from '@mantine/core';
-import { Carousel } from '@mantine/carousel';
+import { MantineProvider, Container, Accordion} from '@mantine/core';
 import { useState } from 'react';
 import Header from './components/Header';
 import SelfieCarousel from './components/SelfieCarousel';
@@ -7,7 +6,6 @@ import Footer from './components/Footer';
 import BikeMatchGame from './components/BikeMatchGame';
 import PosterMatchGame from './components/PosterMatchGame';
 import Superlatives from './components/Superlatives';
-// import Game4 from './components/Game4';
 
 export default function App() {
   const [user, setUser] = useState({ name: '' });

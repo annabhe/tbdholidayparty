@@ -1,6 +1,7 @@
-import { Image, Box } from '@mantine/core';
+import { Image } from '@mantine/core';
 import { Carousel } from '@mantine/carousel';
 import '@mantine/carousel/styles.css';
+import { useRef, useState, useMemo, useEffect } from 'react';
 
 const selfieImages = [
 '/assets/selfies/0104.jpg',
@@ -64,25 +65,58 @@ function shuffleArray(array) {
 }
 
 export default function SelfieCarousel() {
+  const containerRef = useRef(null);
+
+  // Shuffle once on mount
+  const slides = useMemo(() => shuffleArray(selfieImages), []);
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      if (!containerRef.current) return;
+
+      const container = containerRef.current;
+      const scrollAmount = 200; // adjust as needed for your average image width
+
+      container.scrollBy({ left: scrollAmount, behavior: 'smooth' });
+
+      // Loop back to start if we reach the end
+      if (container.scrollLeft + container.offsetWidth >= container.scrollWidth) {
+        container.scrollTo({ left: 0, behavior: 'smooth' });
+      }
+    }, 3000); // autoplay every 3 seconds
+
+    return () => clearInterval(interval);
+  }, []);
+
   return (
-      <Carousel
-        withIndicators={false}
-        withControls
-        slideSize="30%"
-        height={250}
-        slideGap={"xs"}
-        loop
-      >
-        {shuffleArray(selfieImages).map((src, idx) => (
-          <Carousel.Slide key={idx}>
-            <Image
-              src={`${import.meta.env.BASE_URL}${src}`}
-              radius="md"
-              height={180}
-              alt={`Selfie ${idx + 1}`}
-            />
-          </Carousel.Slide>
-        ))}
-      </Carousel>
+    <div
+      ref={containerRef}
+      style={{
+        display: 'flex',
+        overflowX: 'auto',
+        gap: '12px',
+        height: '220px',          // fixed height
+        width: '100%',
+        maxWidth: '100vw',
+        scrollBehavior: 'smooth',
+        padding: '8px 0',         // optional top/bottom spacing
+      }}
+    >
+      {slides.map((src, idx) => (
+        <div key={idx} style={{ flex: '0 0 auto', height: '100%' }}>
+          <Image
+            src={`${import.meta.env.BASE_URL}${src}`}
+            radius="md"
+            style={{
+              height: '100%',
+              width: 'auto',      // variable width, keeps aspect ratio
+              objectFit: 'cover',
+            }}
+            alt={`Selfie ${idx + 1}`}
+          />
+        </div>
+      ))}
+    </div>
   );
 }
+
