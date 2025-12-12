@@ -67,9 +67,11 @@ export default function SelfieCarousel() {
   return (
       <Carousel
         withIndicators={false}
+        withControls
+        slideSize="30%"
         height={250}
+        slideGap={"xs"}
         loop
-        align="center"
       >
         {shuffleArray(selfieImages).map((src, idx) => (
           <Carousel.Slide key={idx}>
