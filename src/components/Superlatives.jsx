@@ -1,0 +1,34 @@
+import { List, Text } from "@mantine/core";
+
+export default function Superlatives() {
+    const categories = [
+    "Most likely to drop the group",
+    "Most Stylish rider",
+    "Most likely to get a flat",
+    "Most prepared to fix a flat",
+    "Most likely to enter a bike race",
+    "Most likely to show up on time",
+    "Most likely to be late to the start",
+    "Most likely to show up halfway (skipping the start)",
+    "Most likely to peel off early",
+    "Most weather proof",
+    "Biggest spender at a coffee shop",
+    "Most likely to forget to start their strava",
+    "Best ride in Worst Conditions",
+    "Most Scenic Ride",
+    ];
+
+  return (
+    <div>
+      <Text fw={600} mb="sm">
+        Ruminate on these categories before we vote later!
+      </Text>
+
+      <List spacing="xs" size="sm" withPadding>
+        {categories.map((cat) => (
+          <List.Item key={cat}>{cat}</List.Item>
+        ))}
+      </List>
+    </div>
+  );
+}

@@ -4,7 +4,7 @@ import Header from './components/Header';
 import Footer from './components/Footer';
 import BikeMatchGame from './components/BikeMatchGame';
 import PosterMatchGame from './components/PosterMatchGame';
-// import Superlatives from './components/Superlatives';
+import Superlatives from './components/Superlatives';
 // import Game4 from './components/Game4';
 
 export default function App() {
@@ -49,7 +49,7 @@ export default function App() {
               Superlatives! See categories
             </Accordion.Control>
             <Accordion.Panel>
-              {/* <Superlatives user={user} /> */}<p>TODO:</p>
+              <Superlatives user={user} />
             </Accordion.Panel>
           </Accordion.Item>
           {/* Bike Match Game */}
@@ -83,10 +83,7 @@ export default function App() {
               </Accordion.Panel>
             </Accordion.Item>
           )}
-
-
           </Accordion>
-
         <Footer />
       </Container>
     </MantineProvider>
