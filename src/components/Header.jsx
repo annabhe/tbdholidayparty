@@ -18,18 +18,20 @@ export default function Header({ user, setUser, setGamesUnlocked }) {
         </Title>
       </div>
 
-      <Group mt="lg" justify="center">
-        <TextInput
-          placeholder="Enter your name..."
-          value={localName}
-          onChange={(e) => setLocalName(e.target.value)}
-          styles={{ input: { height: 60, fontSize: 24 } }} 
-          className="name-input"
-        />
-        <Button size="md" onClick={handleSubmit}>
-          Submit
-        </Button>
-      </Group>
+      {!user.name && (
+        <Group mt="lg" justify="center">
+          <TextInput
+            placeholder="Enter your name..."
+            value={localName}
+            onChange={(e) => setLocalName(e.target.value)}
+            styles={{ input: { height: 60, fontSize: 24 } }} 
+            className="name-input"
+          />
+          <Button size="md" onClick={handleSubmit}>
+            Submit
+          </Button>
+        </Group>
+      )}
 
       {user.name && (
         <Title order={4} mt="md" style={{ color: "red" }}>
