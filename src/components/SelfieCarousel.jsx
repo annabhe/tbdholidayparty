@@ -59,6 +59,14 @@ const selfieImages = [
 '/assets/selfies/picnic.jpg',
 ];
 
+function shuffleArray(array) {
+  for (let i = array.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [array[i], array[j]] = [array[j], array[i]];
+  }
+  return array;
+}
+
 export default function SelfieCarousel() {
   return (
       <Carousel
@@ -67,7 +75,7 @@ export default function SelfieCarousel() {
         loop
         align="center"
       >
-        {selfieImages.map((src, idx) => (
+        {shuffleArray(selfieImages).map((src, idx) => (
           <Carousel.Slide key={idx}>
             <Image
               src={`${import.meta.env.BASE_URL}${src}`}
