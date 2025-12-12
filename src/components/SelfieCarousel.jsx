@@ -66,7 +66,7 @@ function shuffleArray(array) {
 export default function SelfieCarousel() {
   return (
       <Carousel
-        withIndicators
+        withIndicators={false}
         height={250}
         loop
         align="center"
