@@ -3,7 +3,7 @@ import { useState } from 'react';
 import Header from './components/Header';
 import Footer from './components/Footer';
 import BikeMatchGame from './components/BikeMatchGame';
-// import PosterMatchGame from './components/PosterMatchGame';
+import PosterMatchGame from './components/PosterMatchGame';
 // import Superlatives from './components/Superlatives';
 // import Game4 from './components/Game4';
 
@@ -37,7 +37,7 @@ export default function App() {
       <Stack>
         <Header user={user} setUser={setUser} setGamesUnlocked={setGamesUnlocked} />
         <BikeMatchGame user={user} locked={!gamesUnlocked}/>
-        {/* <PosterMatchGame user={user} locked={!gamesUnlocked}/> */}
+        <PosterMatchGame user={user} locked={!gamesUnlocked}/>
         {/* <Superlatives user={user} />
         <Game4 user={user} /> */}
         <Footer />

@@ -5,7 +5,7 @@ import { SortableContext, useSortable, verticalListSortingStrategy } from '@dnd-
 import { CSS } from '@dnd-kit/utilities';
 
 const total = 14;
-solutions = ['0215', '0308', '0329', '0405', '0503', '0525', '0628', '0726', '0830', '0906', '0928', '1011', '1102', '1206']
+const solutions = ['0215', '0308', '0329', '0405', '0503', '0525', '0628', '0726', '0830', '0906', '0928', '1011', '1102', '1206']
 //  "name": "entry.760520203",
 const entryIds = {
   "poster-1": "entry.675552282",
@@ -39,7 +39,7 @@ function SortableSelfie({id, src }) {
       {...listeners}
       style={{
         ...style,
-        minHeight: 120,
+        minHeight: 150,
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'center',
@@ -49,7 +49,7 @@ function SortableSelfie({id, src }) {
         margin: 16,
       }}
     >
-      <Image src={src} height={100} fit="contain" />
+      <Image src={src} height={150} fit="contain" />
     </Card>
   );
 }
@@ -77,10 +77,6 @@ export default function PosterMatchGame({ user }) {
   const [locked, setLocked] = useState(false);
   const [selfies, setSelfies] = useState([]);
 
-  const [posterOrder, setPosterOrder] = useState(
-    Array.from({ length: total }, (_, i) => `poster-${i + 1}`)
-  );
-
   useEffect(() => {
     const randomSelfies = solutions;
     randomSelfies.sort(() => Math.random() - 0.5);
@@ -96,7 +92,7 @@ export default function PosterMatchGame({ user }) {
     const { active, over } = event;
     if (!over || active.id === over.id) return;
 
-    setPosterOrder((prev) => {
+    setSelfies((prev) => {
       const oldIndex = prev.indexOf(active.id);
       const newIndex = prev.indexOf(over.id);
       const newArray = [...prev];
@@ -106,22 +102,21 @@ export default function PosterMatchGame({ user }) {
     });
   }
 
-
   function handleSubmit() {
     const formData = {};
 
     // map selfie[i] → poster at posterOrder[i]
-    posterOrder.forEach((posterId, i) => {
-      const pairKey = `pair-${String(i + 1).padStart(2, "0")}`;
-      formData[entryIds[pairKey]] = posterId; // submitting poster match
+    selfies.forEach((selfieId, i) => {
+      const posterKey = `poster-${i+1}`;
+      formData[entryIds[posterKey]] = selfieId; // submitting poster match
     });
+    console.log(formData)
 
     formData["entry.760520203"] = user.name;
     submitToGoogleForm(
       "https://docs.google.com/forms/d/e/1FAIpQLScrh0_zLIU1edo-tY2-WnekDgObm-ivqUMfnusyV-9iEOpsLg/formResponse",
       formData
     );
-
     setLocked(true);
   }
 
@@ -136,48 +131,35 @@ export default function PosterMatchGame({ user }) {
       <DndContext sensors={sensors} collisionDetection={closestCenter} onDragEnd={handleDragEnd}>
         <Group grow mt="md" align="flex-start" spacing="md">
           <div style={{ display: 'flex', gap: 16, alignItems: 'flex-start', padding: "0 16px" }}>
-            
-            {/* Left: Posters (static) */}
-            <Stack style={{ flex: 1 }}>
-              <Title order={5}>Posters</Title>
 
-              {selfies.map((selfieId, i) => (
-                <Card
-                  key={selfieId}
-                  mt="xs"
-                  withBorder
-                  p="xs"
-                  style={{
-                    minHeight: 120,
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    margin: 16,
-                  }}
-                >
+            <Stack style={{ flex: 1 }}>
+              {[...Array(total).keys()].map((i) => (
+                <Card key={`poster-${i}`} p="s" mt="xs" withBorder
+                  style={{minHeight: 150, display: 'flex', alignItems: 'center', justifyContent: 'center', margin:16}}>
                   <Image
-                    src={`/assets/selfies/${selfieId}.jpg`}
-                    height={100}
+                    src={`${import.meta.env.BASE_URL}/assets/posters/poster-${i+1}.png`}
+                    height={150}
                     fit="contain"
                   />
                 </Card>
               ))}
             </Stack>
-
+            
             {/* Right: Selfies (sortable, randomized) */}
-            <Stack style={{ flex: 0.6 }}>
-              <Title order={5}>Selfies</Title>
-
-              <SortableContext items={posterOrder} strategy={verticalListSortingStrategy}>
-                {posterOrder.map((posterId) => (
-                  <SortableSelfie
-                    key={posterId}
-                    id={posterId}
-                    src={`/assets/posters/${posterId}.png`}
-                  />
-                ))}
-              </SortableContext>
+            <Stack style={{ flex: 1 }}>
+              <DndContext sensors={sensors} collisionDetection={closestCenter} onDragEnd={handleDragEnd}>
+                <SortableContext items={selfies} strategy={verticalListSortingStrategy}>
+                  { selfies.map((selfieId, i) => (
+                    <SortableSelfie
+                      id={selfieId}
+                      key={selfieId}
+                      src={`${import.meta.env.BASE_URL}/assets/selfies/${selfieId}.jpg`}
+                    />
+                  ))}
+                </SortableContext>
+              </DndContext>
             </Stack>
+
           </div>
         </Group>
       </DndContext>

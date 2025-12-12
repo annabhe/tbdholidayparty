@@ -90,7 +90,7 @@ export default function BikeMatchGame({ user }) {
         <Group grow mt="md" align="flex-start" direction="row" spacing="md">
           <div style={{ display: 'flex', padding: "0 16px", marginTop: 16, gap: 16, alignItems: 'flex-start' }}>
             <Stack style={{ flex: 1 }}>
-              <Title order={5}>Bikes</Title>
+              {/* <Title order={5}>Bikes</Title> */}
               {[...Array(16).keys()].map((i) => (
                 <Card key={`bike-${i}`} p="s" mt="xs" withBorder
                   style={{minHeight: 100, display: 'flex', alignItems: 'center', justifyContent: 'center', margin:16}}>
@@ -104,7 +104,7 @@ export default function BikeMatchGame({ user }) {
               ))}
             </Stack>
             <Stack style={{ flex: 0.6 , gap:"sm"}}>
-              <Title order={5}>Names</Title>
+              {/* <Title order={5}>Names</Title> */}
               <DndContext sensors={sensors} collisionDetection={closestCenter} onDragEnd={handleDragEnd}>
                 <SortableContext items={ridersList} strategy={verticalListSortingStrategy}>
                   {ridersList.map((rider) => (
