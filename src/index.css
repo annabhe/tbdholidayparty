@@ -11,6 +11,7 @@
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  --mantine-scale: 0.8 !important; /* or 0.6, 0.8, etc */
 }
 
 a {
@@ -66,120 +67,19 @@ button:focus-visible {
     background-color: #f9f9f9;
   }
 }
-/* -------------------------------------------
-   GLOBAL MANTINE DARK-THEME OVERRIDES
-   Holiday party edition ✨
-------------------------------------------- */
 
-/* Make the whole background a smooth dark canvas */
-body {
-  background-color: #111 !important;
-  color: #eee !important;
-  font-family: 'Inter', sans-serif;
-}
-
-/* -------------------------------------------
-   ACCORDION REFINEMENTS
-------------------------------------------- */
-
-/* Accordion container */
 .mantine-Accordion-root {
-  max-width: 650px;
-  margin: 0 auto;
-  width: 80%;
+  width: 100% !important;
 }
 
-/* Each accordion item */
 .mantine-Accordion-item {
-  background: #1a1a1a !important;
-  border: 1px solid #333 !important;
-  border-radius: 12px !important;
-  margin-bottom: 12px !important;
-  overflow: hidden;
+  display: block !important;
+  width: 100% !important;
 }
 
-/* Control section (the clickable header) */
 .mantine-Accordion-control {
-  padding: 14px 18px !important;
-  font-size: 1rem !important;
-  color: #ddd !important;
-  background: #1a1a1a !important;
-}
-
-/* Chevron (the arrow icon) */
-.mantine-Accordion-chevron {
-  width: 12px !important;
-  height: 12px !important;
-  color: #bbb !important;
-  transition: transform 0.2s ease;
-}
-
-/* Chevron hover effect */
-.mantine-Accordion-control:hover .mantine-Accordion-chevron {
-  color: #fff !important;
-}
-
-/* Accordion panel (content area) */
-.mantine-Accordion-panel {
-  padding: 16px !important;
-  background: #141414 !important;
-  color: #eee !important;
-}
-
-/* Disabled section ("locked" before name is set) */
-.mantine-Accordion-control[data-disabled="true"] {
-  opacity: 0.4;
-  cursor: not-allowed !important;
-}
-
-/* -------------------------------------------
-   INPUTS (the name field)
-------------------------------------------- */
-.mantine-TextInput-input {
-  border-radius: 10px !important;
-  border: 2px solid #555 !important;
-  background: #1a1a1a !important;
-  color: #eee !important;
-}
-
-.mantine-TextInput-input:focus {
-  border-color: #ffd83d !important; /* holiday gold highlight */
-  box-shadow: 0 0 6px #ffd83d;
-}
-
-/* Submit button */
-.mantine-Button-root {
-  font-weight: 600 !important;
-  padding: 8px 18px !important;
-  background: #222 !important;
-  border: 1px solid #444 !important;
-  border-radius: 10px !important;
-  color: #eee !important;
-}
-
-.mantine-Button-root:hover {
-  background: #333 !important;
-}
-
-/* -------------------------------------------
-   CARD OVERRIDES (your Mantine Card theme)
-------------------------------------------- */
-.mantine-Card-root {
-  background: #1b1b1b !important;
-  border-color: #333 !important;
-  border-width: 2px !important;
-  border-radius: 16px !important;
-  padding: 14px !important;
-}
-
-/* -------------------------------------------
-   GENERAL SPACING
-------------------------------------------- */
-section {
-  margin-bottom: 24px;
-}
-
-/* Prevent giant scrollbars in mobile accordion interactions */
-html, body {
-  overscroll-behavior: contain;
+  display: flex !important;
+  justify-content: space-between;
+  align-items: center;
+  width: 100% !important;
 }

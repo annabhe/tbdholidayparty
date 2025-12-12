@@ -29,7 +29,7 @@ export default function Header({ user, setUser, setGamesUnlocked }) {
             placeholder="Enter your name"
             value={localName}
             onChange={(e) => setLocalName(e.target.value)}
-            styles={{ input: { height: 60, fontSize: 24 } }} 
+            styles={{ input: { height: 36, fontSize: 20 } }} 
             className="name-input"
           />
           <Button size="md" style={{marginTop:"10px"}} onClick={handleSubmit}>
@@ -39,7 +39,7 @@ export default function Header({ user, setUser, setGamesUnlocked }) {
       )}
 
       {user.name && (
-        <Title order={4} mt="md" style={{ color: "red" }}>
+        <Title order={2} mt="md" style={{ color: "red" }}>
           Welcome, {user.name}!
         </Title>
       )}

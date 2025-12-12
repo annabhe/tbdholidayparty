@@ -47,7 +47,7 @@ function SortableSelfie({id, src }) {
         borderWidth: 2,
         borderColor: '#444',
         borderStyle: 'solid',
-        margin: 16,
+        margin: 8,
       }}
     >
       <Image src={src} height={150} fit="contain" />
@@ -171,12 +171,12 @@ export default function PosterMatchGame({ user }) {
 
       <DndContext sensors={sensors} collisionDetection={closestCenter} onDragEnd={handleDragEnd}>
         <Group grow mt="md" align="flex-start" spacing="md">
-          <div style={{ display: 'flex', gap: 16, alignItems: 'flex-start', padding: "0 16px" }}>
+          <div style={{ display: 'flex', gap: 8, alignItems: 'flex-start', padding: "0 8px" }}>
 
             <Stack style={{ flex: 1 }}>
               {[...Array(total).keys()].map((i) => (
                 <Card key={`poster-${i}`} p="s" mt="xs" withBorder
-                  style={{minHeight: 150, display: 'flex', alignItems: 'center', justifyContent: 'center', margin:16}}>
+                  style={{minHeight: 150, display: 'flex', alignItems: 'center', justifyContent: 'center', margin:8}}>
                   <Image
                     src={`${import.meta.env.BASE_URL}/assets/posters/poster-${i+1}.png`}
                     height={150}
