@@ -1,7 +1,7 @@
 import { List, Text } from "@mantine/core";
 
 export default function Superlatives() {
-    const categories = [
+  const categories = [
     "Most likely to drop the group",
     "Most Stylish rider",
     "Most likely to get a flat",
@@ -16,7 +16,7 @@ export default function Superlatives() {
     "Most likely to forget to start their strava",
     "Best ride in Worst Conditions",
     "Most Scenic Ride",
-    ];
+  ];
 
   return (
     <div>
