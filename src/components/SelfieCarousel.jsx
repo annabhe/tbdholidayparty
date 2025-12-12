@@ -2,10 +2,6 @@ import { Image, Box } from '@mantine/core';
 import { Carousel } from '@mantine/carousel';
 import '@mantine/carousel/styles.css';
 
-// const selfieImages = Object.values(
-//   import.meta.glob('/src/assets/selfies/*.{jpg,jpeg,png}', { eager: true })
-// ).map((img) => img.default);
-
 const selfieImages = [
 '/assets/selfies/0104.jpg',
 '/assets/selfies/0118.jpg',
