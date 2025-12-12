@@ -1,15 +1,20 @@
-import { MantineProvider, Container, Stack } from '@mantine/core';
+import { MantineProvider, Container, Stack, Accordion} from '@mantine/core';
 import { useState } from 'react';
 import Header from './components/Header';
 import Footer from './components/Footer';
 import BikeMatchGame from './components/BikeMatchGame';
 import PosterMatchGame from './components/PosterMatchGame';
-// import Superlatives from './components/Superlatives';
+import Superlatives from './components/Superlatives';
 // import Game4 from './components/Game4';
 
 export default function App() {
   const [user, setUser] = useState({ name: '' });
   const [gamesUnlocked, setGamesUnlocked] = useState(false);
+
+  // track submissions to hide games
+  const [bikeGameDone, setBikeGameDone] = useState(false);
+  const [posterGameDone, setPosterGameDone] = useState(false);
+
   return (
     <MantineProvider
       theme={{
@@ -34,14 +39,53 @@ export default function App() {
         },
       }}
     >
-      <Stack>
+      <Container size="md">
         <Header user={user} setUser={setUser} setGamesUnlocked={setGamesUnlocked} />
-        <BikeMatchGame user={user} locked={!gamesUnlocked}/>
-        <PosterMatchGame user={user} locked={!gamesUnlocked}/>
-        {/* <Superlatives user={user} />
-        <Game4 user={user} /> */}
+
+        <Accordion>
+          {/* Superlatives – ALWAYS visible */}
+          <Accordion.Item value="superlatives">
+            <Accordion.Control>
+              Superlatives! See categories
+            </Accordion.Control>
+            <Accordion.Panel>
+              <Superlatives user={user} />
+            </Accordion.Panel>
+          </Accordion.Item>
+          {/* Bike Match Game */}
+          {!bikeGameDone && (
+            <Accordion.Item value="match-bike">
+              <Accordion.Control disabled={!gamesUnlocked}>
+                Bike Match Game!
+              </Accordion.Control>
+              <Accordion.Panel>
+                <BikeMatchGame
+                  user={user}
+                  locked={!gamesUnlocked}
+                  onSubmit={() => setBikeGameDone(true)}
+                />
+              </Accordion.Panel>
+            </Accordion.Item>
+          )}
+
+          {/* Poster Match Game */}
+          {!posterGameDone && (
+            <Accordion.Item value="match-poster">
+              <Accordion.Control disabled={!gamesUnlocked}>
+                Selfie Poster Match Game!
+              </Accordion.Control>
+              <Accordion.Panel>
+                <PosterMatchGame
+                  user={user}
+                  locked={!gamesUnlocked}
+                  onSubmit={() => setPosterGameDone(true)}
+                />
+              </Accordion.Panel>
+            </Accordion.Item>
+          )}
+          </Accordion>
         <Footer />
-      </Stack>
+      </Container>
     </MantineProvider>
   );
 }
