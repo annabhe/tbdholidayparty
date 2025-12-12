@@ -1,9 +1,11 @@
 import { useState } from 'react';
-import { Card, Title, Text, Button, Stack, Group, Image } from '@mantine/core';
+import { Card, Title, Text, Button, Stack, Group, Image, Box } from '@mantine/core';
+import { useDisclosure } from '@mantine/hooks';
 import { useDroppable, DndContext, closestCenter, PointerSensor, useSensor, useSensors } from '@dnd-kit/core';
 import { SortableContext, useSortable, verticalListSortingStrategy } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
 
+const total = 16
 const riders = ["Alex","Andrew","Anna","Apple","Ben Law","Ben Lin","Constance","David M","Hardy","Jarrett","Josh","Katie","Sarah","Sten","Vignesh","Wenbo"];
 const entryIds = {
   "bike-01": "entry.2118217753",
@@ -24,6 +26,11 @@ const entryIds = {
   "bike-16": "entry.1257218392",
 };
 
+const solution = [ "Josh", "Ben Lin", "David M", "Katie", "Andrew", 
+  "Ben Law", "Anna", "Apple", "Alex", "Wenbo", 
+  "Jarrett", "Sten", "Sarah", "Vignesh", "Hardy", 
+  "Constance"
+]
 
 function SortableName({ id, label }) {
   const { attributes, listeners, setNodeRef, transform, transition } = useSortable({ id });
@@ -59,8 +66,10 @@ const submitToGoogleForm = async (url, data) => {
 };
 
 export default function BikeMatchGame({ user }) {
-  const [locked, setLocked] = useState(false);
   const [ridersList, setRidersList] = useState(riders);
+  const [locked, setLocked] = useState(false);
+  const [score, setScore] = useState(null);
+  const [opened, { open, close }] = useDisclosure();
   const sensors = useSensors(useSensor(PointerSensor, { activationConstraint: { distance: 5 } }));
 
   function handleDragEnd(event) {
@@ -76,11 +85,58 @@ export default function BikeMatchGame({ user }) {
       return newArray;
     });
   }
-
+  
+  function handleSubmit() {
+    const formData = {};
+    ridersList.forEach((rider, i) => {
+      const bikeKey = `bike-${String(i + 1).padStart(2,'0')}`;
+      formData[entryIds[bikeKey]] = rider;
+    });
+    formData["entry.465261784"] = user.name; // user name
+    submitToGoogleForm('https://docs.google.com/forms/d/e/1FAIpQLSe1-00GxyO8mNZRAM2UPoWDet4DN6zlO71d2om9-Fh3rm-wug/formResponse', formData);
+  // setLocked(true);
+    let score = 0;
+    for (let i = 0; i < total; i++) {
+      if (riders[i] === solution[i]) {
+        score++;
+      }
+    }
+    setScore(score);
+    open();
+  }
   return (
-    <Card mt="xl" p="md" radius="lg" withBorder opacity={locked ? 0.4 : 1}>
-      <Title order={1}>Match the Bike to the Owner</Title>
-      <Text size="sm" mb="sm">
+    <Card mt="xl" p="md" radius="lg" withBorder opacity={locked ? 0.4 : 1} style={{ textAlign: "center"}}>
+      {score !== null && (
+        <div 
+          style={{
+            position: "fixed",
+            top: 0,
+            left: 0,
+            width: "100vw",
+            height: "100vh",
+            backgroundColor: "rgba(0, 0, 0, 0.5)",  // Semi-transparent background
+            zIndex: 10000,  // Overlay on top
+            display: "flex",
+            justifyContent: "center",
+            alignItems: "center"
+          }}
+        >
+          <Box style={{ textAlign: "center", backgroundColor: "gold", borderRadius: "10px"}}>
+            <Title size="xl" weight={600}>Congratulations!</Title>
+            <Title size="lg" style={{ marginTop: "50px",marginLeft: "10px", marginRight: "10px" }}>You could match {score}/16 TBD riders with their bikes!</Title>
+            <Button 
+              variant="outline" 
+              style={{ marginTop: "50px", marginBottom: "50px",marginLeft: "100px", marginRight: "100px"}} 
+              onClick={() => {
+                setScore(null)
+                close()
+              }} 
+            >Close</Button>
+          </Box>
+        </div>
+      )}
+      <Title style={{marginLeft: "20px", marginRight: "20px" }} order={1}>Match the Bike to the Owner</Title>
+      <Text size="sm" mb="sm" style={{marginLeft: "20px", marginRight: "20px" }}>
         Drag the names on the right to reorder according to the bikes on the left.
         When you're ready, press the submit button. 
         You can only submit once! Order carefully...
@@ -117,16 +173,7 @@ export default function BikeMatchGame({ user }) {
         </Group>
       </DndContext>
 
-      <Button disabled={!user.name || locked} mt="md" onClick={() => {
-          const formData = {};
-          ridersList.forEach((rider, i) => {
-            const bikeKey = `bike-${String(i + 1).padStart(2,'0')}`;
-            formData[entryIds[bikeKey]] = rider;
-          });
-          formData["entry.465261784"] = user.name; // user name
-          submitToGoogleForm('https://docs.google.com/forms/d/e/1FAIpQLSe1-00GxyO8mNZRAM2UPoWDet4DN6zlO71d2om9-Fh3rm-wug/formResponse', formData);
-        setLocked(true);
-      }}>Submit</Button>
+      <Button disabled={!user.name || locked} mt="md" onClick={handleSubmit}>Submit</Button>
     </Card>
   );
 }
