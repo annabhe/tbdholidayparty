@@ -1,6 +1,8 @@
 import { MantineProvider, Container, Stack, Accordion} from '@mantine/core';
+import { Carousel } from '@mantine/carousel';
 import { useState } from 'react';
 import Header from './components/Header';
+import SelfieCarousel from './components/SelfieCarousel';
 import Footer from './components/Footer';
 import BikeMatchGame from './components/BikeMatchGame';
 import PosterMatchGame from './components/PosterMatchGame';
@@ -41,7 +43,7 @@ export default function App() {
     >
       <Container size="md">
         <Header user={user} setUser={setUser} setGamesUnlocked={setGamesUnlocked} />
-
+        <SelfieCarousel />
         <Accordion>
           {/* Superlatives – ALWAYS visible */}
           <Accordion.Item value="superlatives">
