@@ -1,4 +1,4 @@
-import { List, Text } from "@mantine/core";
+import { List, Text, Card} from "@mantine/core";
 
 export default function Superlatives() {
   const categories = [
@@ -19,8 +19,8 @@ export default function Superlatives() {
   ];
 
   return (
-    <div>
-      <Text fw={600} mb="sm">
+    <Card>
+      <Text fw={600} mb="sm" style={{marginLeft: "15px", marginRight: "15px", marginBottom: "24px"}}>
         Ruminate on these categories before we vote later!
       </Text>
 
@@ -29,6 +29,6 @@ export default function Superlatives() {
           <List.Item key={cat}>{cat}</List.Item>
         ))}
       </List>
-    </div>
+    </Card>
   );
 }
