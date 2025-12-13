@@ -26,9 +26,9 @@ const entryIds = {
 };
 
 
-function SortableSelfie({id, src }) {
-  const { attributes, listeners, setNodeRef, transform, transition } = useSortable({ id });
-  const style = { transform: CSS.Transform.toString(transform), transition, cursor: 'grab', touchAction: 'none' };
+function SortableSelfie({id, src, disabled }) {
+  const { attributes, listeners, setNodeRef, transform, transition } = useSortable({ id, disabled,});
+  const style = { transform: CSS.Transform.toString(transform), transition, cursor: 'grab', touchAction: 'none', opacity: disabled ? 0.6 : 1,};
 
   return (
     <Card
@@ -36,8 +36,8 @@ function SortableSelfie({id, src }) {
       p="xs"
       mt="xs"
       withBorder
-      {...attributes}
-      {...listeners}
+      {...(!disabled ? attributes : {})}
+      {...(!disabled ? listeners : {})}
       style={{
         ...style,
         minHeight: 150,
@@ -73,22 +73,19 @@ const submitToGoogleForm = async (url, data) => {
   console.log("Submitted to Google Form");
 };
 
+function shuffle(array) {
+  return [...array].sort(() => Math.random() - 0.5);
+}
 
-export default function PosterMatchGame({ user }) {
-  const [locked, setLocked] = useState(false);
-  const [selfies, setSelfies] = useState([]);
+export default function PosterMatchGame({ user, locked, onSubmit}) {
+  const [selfies, setSelfies] = useState(() => shuffle(solutions));
   const [score, setScore] = useState(null);
+  const [isLocked, setIsLocked] = useState(false);
   const [opened, { open, close }] = useDisclosure();
-  useEffect(() => {
-    const randomSelfies = solutions;
-    randomSelfies.sort(() => Math.random() - 0.5);
-    setSelfies(randomSelfies);
-  }, []);
 
   const sensors = useSensors(
     useSensor(PointerSensor, { activationConstraint: { distance: 5 } })
   );
-
 
   function handleDragEnd(event) {
     const { active, over } = event;
@@ -119,19 +116,21 @@ export default function PosterMatchGame({ user }) {
       "https://docs.google.com/forms/d/e/1FAIpQLScrh0_zLIU1edo-tY2-WnekDgObm-ivqUMfnusyV-9iEOpsLg/formResponse",
       formData
     );
-    // setLocked(true);
-    let score = 0;
+    setIsLocked(true);
+    let tempScore = 0;
+    console.log(selfies)
     for (let i = 0; i < total; i++) {
       if (selfies[i] === solutions[i]) {
-        score++;
+        tempScore++;
       }
     }
-    setScore(score);
+    console.log(tempScore)
+    setScore(tempScore);
     open();
   }
 
   return (
-    <Card mt="xl" p="md" radius="lg" withBorder opacity={locked ? 0.4 : 1} style={{ textAlign: "center"}}>
+    <Card mt="xl" p="md" radius="lg" withBorder style={{ textAlign: "center"}}>
       {score !== null && (
         <div 
           style={{
@@ -144,18 +143,21 @@ export default function PosterMatchGame({ user }) {
             zIndex: 10000,  // Overlay on top
             display: "flex",
             justifyContent: "center",
-            alignItems: "center"
+            alignItems: "center",
           }}
         >
-          <Box style={{ textAlign: "center", backgroundColor: "gold", borderRadius: "10px"}}>
+          <Box style={{ opacity:1, textAlign: "center", backgroundColor: "gold", borderRadius: "10px"}}>
             <Title size="xl" weight={600}>Congratulations!</Title>
-            <Title size="lg" style={{ marginTop: "50px",marginLeft: "10px", marginRight: "10px" }}>You could match {score}/14 TBD rides with the selfies!</Title>
+            <Title size="lg" style={{ marginTop: "50px",marginLeft: "10px", marginRight: "10px" }}>
+              You could match {score}/14 TBD rides with the selfies!
+            </Title>
             <Button 
               variant="outline" 
               style={{ marginTop: "50px", marginBottom: "50px",marginLeft: "100px", marginRight: "100px"}} 
               onClick={() => {
                 setScore(null)
                 close()
+                // onSubmit();
               }} 
             >Close</Button>
           </Box>
@@ -166,7 +168,7 @@ export default function PosterMatchGame({ user }) {
         How many of our most memorable rides are you in? 
         How closely are you following the Instagram page?
         Drag selfies on the right to line up with the poster on the left.
-        When you're ready, submit once.
+        When you're ready, submit once. Once you submit, you will no longer be able to reorder your choice.
       </Text>
 
       <DndContext sensors={sensors} collisionDetection={closestCenter} onDragEnd={handleDragEnd}>
@@ -176,7 +178,7 @@ export default function PosterMatchGame({ user }) {
             <Stack style={{ flex: 1 }}>
               {[...Array(total).keys()].map((i) => (
                 <Card key={`poster-${i}`} p="s" mt="xs" withBorder
-                  style={{minHeight: 150, display: 'flex', alignItems: 'center', justifyContent: 'center', margin:8}}>
+                  style={{minHeight: 150, display: 'flex', alignItems: 'center', justifyContent: 'center', margin:8, opacity: isLocked ? 0.6 : 1}}>
                   <Image
                     src={`${import.meta.env.BASE_URL}/assets/posters/poster-${i+1}.png`}
                     height={150}
@@ -195,6 +197,7 @@ export default function PosterMatchGame({ user }) {
                       id={selfieId}
                       key={selfieId}
                       src={`${import.meta.env.BASE_URL}/assets/selfies/${selfieId}.jpg`}
+                      disabled={isLocked}
                     />
                   ))}
                 </SortableContext>
@@ -205,7 +208,7 @@ export default function PosterMatchGame({ user }) {
         </Group>
       </DndContext>
 
-      <Button disabled={!user.name || locked} mt="md" onClick={handleSubmit}>
+      <Button disabled={!user.name || isLocked} mt="md" onClick={handleSubmit}>
         Submit
       </Button>
     </Card>
