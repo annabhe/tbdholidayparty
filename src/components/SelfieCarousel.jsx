@@ -80,8 +80,8 @@ export default function SelfieCarousel() {
       container.scrollBy({ left: scrollAmount, behavior: 'smooth' });
 
       // Loop back to start if we reach the end
-      if (container.scrollLeft + container.offsetWidth >= container.scrollWidth) {
-        container.scrollTo({ left: 0, behavior: 'smooth' });
+      if (container.scrollLeft > 9000) {
+        container.scrollLeft = 0; // instant jump
       }
     }, 3000); // autoplay every 3 seconds
 
