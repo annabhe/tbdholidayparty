@@ -5,8 +5,8 @@ import { useDroppable, DndContext, closestCenter, PointerSensor, useSensor, useS
 import { SortableContext, useSortable, verticalListSortingStrategy } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
 
-const total = 18 // TODO: Change to 19
-const riders = ["Alex","Andrew","Anna","Apple","Ben Law","Ben Lin","Conor","Constance","David M","Hardy","Jarrett","Josh","Katie","Nick","Sarah","Sten","Tim","Vignesh","Wenbo"];
+const total = 20
+const riders = ["Alex","Andrew","Anna","Apple","Ben Law","Ben Lin","Conor","Constance","David M","David K", "Hardy","Jarrett","Josh","Katie","Nick","Sarah","Sten","Tim","Vignesh","Wenbo"];
 const entryIds = {
   "bike-01": "entry.2118217753",
   "bike-02": "entry.1022906453",
@@ -26,14 +26,14 @@ const entryIds = {
   "bike-16": "entry.1257218392",
   "bike-17": "entry.455800163",
   "bike-18": "entry.1418443655",
-  "bike-19": "entry.1502225423", // To be Nick
-  // "bike-20": "entry.2066368981",
+  "bike-19": "entry.1502225423",
+  "bike-20": "entry.2066368981",
 };
 
 const solution = [ "Josh", "Ben Lin", "David M", "Katie", "Andrew", 
   "Ben Law", "Anna", "Apple", "Alex", "Wenbo", 
   "Jarrett", "Sten", "Sarah", "Vignesh", "Hardy", 
-  "Constance", "Conor", "Tim", "Nick"
+  "Constance", "Conor", "Tim", "Nick", "David K"
 ]
 
 function SortableName({ id, label, disabled }) {

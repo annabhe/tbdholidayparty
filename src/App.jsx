@@ -23,13 +23,13 @@ export default function App() {
             defaultProps: {
               radius: "lg",     // bigger rounded corners
               shadow: "sm",
-              withBorder: true,
               padding: "sm",
+              withBorder: true,
             },
             styles: (theme) => ({
               root: {
-                borderRadius: theme.radius.lg,   // ensures radius applies even if inline styles exist
-                borderColor: "#444",
+                borderRadius: theme.radius.md,   // ensures radius applies even if inline styles exist
+                borderColor: "#BB2528",
                 borderWidth: 2,
                 borderStyle: "solid",
                 overflow: "hidden",
@@ -42,7 +42,20 @@ export default function App() {
       <Container size="md">
         <Header user={user} setUser={setUser} setGamesUnlocked={setGamesUnlocked} />
         <SelfieCarousel />
-        <Accordion>
+        <Accordion 
+          variant="contained"
+          styles={{
+            item: {
+              borderColor: "#BB2528",
+            },
+            control: {
+              color: "#BB2528",
+            },
+            chevron: {
+              color: "#BB2528",
+            },
+          }}
+        >
           {/* Superlatives – ALWAYS visible */}
           <Accordion.Item value="superlatives">
             <Accordion.Control>

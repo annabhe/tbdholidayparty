@@ -1,12 +1,28 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { TextInput, Button, Group, Title , Text} from "@mantine/core";
 import "./Header.css";
 
 export default function Header({ user, setUser, setGamesUnlocked }) {
   const [localName, setLocalName] = useState(user.name || "");
 
+  // Load from localStorage on first render
+  useEffect(() => {
+    const storedName = localStorage.getItem("name");
+    if (storedName) {
+      setLocalName(storedName);
+    }
+  }, []);
+
+  // Save to localStorage whenever name changes
+  useEffect(() => {
+    if (localName) {
+      localStorage.setItem("name", localName);
+    }
+  }, [localName]);
+
   const handleSubmit = () => {
     setUser((prev) => ({ ...prev, name: localName }));
+
     setGamesUnlocked(true);
   };
 
@@ -39,10 +55,12 @@ export default function Header({ user, setUser, setGamesUnlocked }) {
       )}
 
       {user.name && (
-        <Title order={2} mt="md" style={{ color: "red" }}>
+        <Title order={2} mt="md" c="#BB2528">
           Welcome, {user.name}!
         </Title>
       )}
+
+      
     </div>
   );
 }

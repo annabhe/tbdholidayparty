@@ -6,11 +6,11 @@
 /* Y2K shiny gradient */
 .y2k-title {
   font-family: "Comic Sans MS", "Arial Rounded MT Bold", sans-serif;
-  background: linear-gradient(90deg, #ff0073, #00eaff, #00ff51);
+  background: linear-gradient(90deg, #EA4630, #00eaff, #146B3A);
   background-clip: text;
   -webkit-background-clip: text;
   color: transparent;
-  text-shadow: 0 0 8px #ffeec5, 0 0 15px #aa103c;
+  text-shadow: 0 0 8px #ffeec5, 0 0 15px #BB2528;
   font-size: 4rem;
   font-weight: 900;
 }
@@ -45,7 +45,6 @@
 /* Optional glowy input field */
 .name-input input {
   border-radius: 12px;
-  border: 2px solid #ffe600;
-  background-color: #111;
-  color: #ffe600;
+  border: 2px solid #BB2528;
+  color: #BB2528;
 }

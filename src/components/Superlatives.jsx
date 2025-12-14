@@ -13,8 +13,8 @@ export default function Superlatives() {
     "Most likely to peel off early",
     "Most weather proof",
     "Biggest spender at a coffee shop",
-    "Most likely to forget to start their strava",
-    "Best ride in Worst Conditions",
+    "Most likely to forget to start their Strava",
+    "Best ride in worst conditions",
     "Most Scenic Ride",
   ];
 
