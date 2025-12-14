@@ -6,6 +6,7 @@ import Footer from './components/Footer';
 import BikeMatchGame from './components/BikeMatchGame';
 import PosterMatchGame from './components/PosterMatchGame';
 import Superlatives from './components/Superlatives';
+import Charts from './components/Charts';
 
 export default function App() {
   const [user, setUser] = useState({ name: '' });
@@ -14,6 +15,21 @@ export default function App() {
   // track submissions to hide games
   const [bikeGameDone, setBikeGameDone] = useState(false);
   const [posterGameDone, setPosterGameDone] = useState(false);
+
+  const charts = [
+    {
+      title: "Route Popularity",
+      src: `${import.meta.env.BASE_URL}/assets/charts/route_popularity_pie_2025.png`,
+    },
+    {
+      title: "Route Popularity",
+      src: `${import.meta.env.BASE_URL}/assets/charts/coffee_sunburst_2025.png`,
+    },
+    {
+      title: "Route Popularity",
+      src: `${import.meta.env.BASE_URL}/assets/charts/start_sunburst_2025.png`,
+    },
+  ]
 
   return (
     <MantineProvider
@@ -96,6 +112,14 @@ export default function App() {
               </Accordion.Panel>
             </Accordion.Item>
           )}
+          <Accordion.Item value="charts">
+            <Accordion.Control>
+              TBD Facts and Figures
+            </Accordion.Control>
+            <Accordion.Panel>
+              <Charts charts={charts} />
+            </Accordion.Panel>
+          </Accordion.Item> 
           </Accordion>
         <Footer />
       </Container>
