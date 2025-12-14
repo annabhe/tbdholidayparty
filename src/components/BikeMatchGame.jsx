@@ -101,7 +101,7 @@ export default function BikeMatchGame({ user, locked, onSubmit }) {
     setIsLocked(true);
     let score = 0;
     for (let i = 0; i < total; i++) {
-      if (riders[i] === solution[i]) {
+      if (ridersList[i] === solution[i]) {
         score++;
       }
     }
