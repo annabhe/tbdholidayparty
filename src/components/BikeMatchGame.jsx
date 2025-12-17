@@ -76,7 +76,7 @@ export default function BikeMatchGame({ user, locked, onSubmit }) {
   }
 
   function SortableName({ key, id, rider }) {
-    const locked = false
+    const locked = false;
     const { attributes, listeners, setNodeRef, transform, transition} = useSortable({ id, disabled: locked });
 
     const style = {
