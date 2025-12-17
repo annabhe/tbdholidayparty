@@ -33,48 +33,6 @@ const entryIds = {
 
 const solution = [ "Josh", "Ben Lin", "David M", "Katie", "Andrew", "Ben Law", "Anna", "Apple", "Alex", "Wenbo", "Jarrett", "Sten", "Sarah", "Vignesh", "Hardy", "Constance", "Conor", "Tim", "Nick", "David K"]
 
-function SortableName({ id, label, locked, onToggleLock }) {
-  const { attributes, listeners, setNodeRef, transform, transition} = useSortable({ id, disabled: locked });
-
-  const style = {
-    transform: CSS.Transform.toString(transform),
-    transition,
-    cursor: locked ? "not-allowed" : "grab",
-    opacity: locked ? 0.5 : 1,
-  };
-
-  return (
-    <Card
-      ref={setNodeRef}
-      p="xs"
-      mt="xs"
-      withBorder
-      style={{
-        ...style,
-        minHeight: 100,
-        display: "flex",
-        alignItems: "center",
-        justifyContent: "space-between",
-        borderWidth: "2px",
-        borderColor: locked ? "#999" : "#444",
-        margin: 16,
-      }}
-      {...(!locked ? attributes : {})}
-      {...(!locked ? listeners : {})}
-    >
-      <Text size="lg" weight={800}>
-        {label}
-      </Text>
-
-      <ActionIcon
-        variant="subtle"
-        onClick={() => onToggleLock(id)}
-      >
-        {locked ? <IconLock size={20} /> : <IconLockOpen size={20} />}
-      </ActionIcon>
-    </Card>
-  );
-}
 
 function toGoogleQueryString(obj) {
   return Object.entries(obj)
@@ -100,54 +58,126 @@ export default function BikeMatchGame({ user, locked, onSubmit }) {
       locked: false,
     }))
   );
+  const sortableIds = ridersList
+    .filter((r) => !r.locked)
+    .map((r) => r.id);
 
   const [isLocked, setIsLocked] = useState(false);
   const [score, setScore] = useState(null);
   const [opened, { open, close }] = useDisclosure();
   const sensors = useSensors(useSensor(PointerSensor, { activationConstraint: { distance: 5 } }));
 
+  function toggleRiderLock(id) {
+    setRidersList((prev) =>
+      prev.map((r) =>
+        r.id === id ? { ...r, locked: !r.locked } : r
+      )
+    );
+  }
+
+  function SortableName({ key, id, rider }) {
+    const locked = false
+    const { attributes, listeners, setNodeRef, transform, transition} = useSortable({ id, disabled: locked });
+
+    const style = {
+      transform: CSS.Transform.toString(transform),
+      transition,
+      cursor: locked ? "not-allowed" : "grab",
+      opacity: locked ? 0.5 : 1,
+    };
+
+    return (
+      <Card
+        ref={setNodeRef}
+        p="xs"
+        mt="xs"
+        withBorder
+        style={{
+          ...style,
+          minHeight: 100,
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "space-between",
+          borderWidth: "2px",
+          borderColor: locked ? "#999" : "#444",
+          margin: 16,
+        }}
+        {...(!locked ? attributes : {})}
+        {...(!locked ? listeners : {})}
+      >
+        <Text size="lg" weight={800}>
+          {id}
+        </Text>
+
+        <ActionIcon
+          variant="subtle"
+          onClick={() => toggleRiderLock(id)}
+        >
+          {locked ? <IconLock size={20} /> : <IconLockOpen size={20} />}
+        </ActionIcon>
+      </Card>
+    );
+  }
+  function LockedName({ key, id, rider }) {
+    return (
+      <Card
+        p="xs"
+        mt="xs"
+        withBorder
+        style={{
+          minHeight: 100,
+          margin: 16,
+          opacity: 0.6,
+          cursor: "not-allowed",
+        }}
+      >
+        <Text size="lg" weight={800}>
+          {id}
+        </Text>
+        <ActionIcon
+          variant="subtle"
+          onClick={() => toggleRiderLock(id)}
+        >
+          {rider.locked ? <IconLock size={20} /> : <IconLockOpen size={20} />}
+        </ActionIcon>
+      </Card>
+    );
+  }
+
   function handleDragEnd(event) {
     const { active, over } = event;
     if (!over || active.id === over.id) return;
 
     setRidersList((prev) => {
-      console.log("prev: ", prev)
-      const dragged = prev.find((r) => r.id === active.id);
-      if (dragged.locked) return prev;
+      const locked = [];
+      const unlocked = [];
 
-      // Full list indices
-      const fromIndex = prev.findIndex((r) => r.id === active.id);
-      const toIndex = prev.findIndex((r) => r.id === over.id);
+      prev.forEach((item, index) => {
+        item.locked
+          ? locked.push({ index, item })
+          : unlocked.push(item);
+      });
 
-      // 1 Extract unlocked items (this is the reorderable list)
-      const unlocked = prev.filter((r) => !r.locked);
-      console.log("unlocked: ", unlocked)
+      const from = unlocked.findIndex((i) => i.id === active.id);
+      const to = unlocked.findIndex((i) => i.id === over.id);
 
-      // 2 Compute unlocked index of dragged item
-      const fromUnlockedIndex = unlocked.findIndex(
-        (r) => r.id === active.id
-      );
-
-      // 3 Count how many unlocked items exist BEFORE the drop target
-      const toUnlockedIndex = prev
-        .slice(0, toIndex)
-        .filter((r) => !r.locked).length;
-
-      // 4 Reorder unlocked items
       const reordered = [...unlocked];
-      const [moved] = reordered.splice(fromUnlockedIndex, 1);
-      reordered.splice(toUnlockedIndex, 0, moved);
+      const [moved] = reordered.splice(from, 1);
+      reordered.splice(to, 0, moved);
 
-      // 5 Rebuild full list, reinserting locked items at fixed indices
+      const result = [...prev];
       let cursor = 0;
-      return prev.map((item) =>
-        item.locked ? item : reordered[cursor++]
-      );
+
+      for (let i = 0; i < result.length; i++) {
+        if (!locked.some((l) => l.index === i)) {
+          result[i] = reordered[cursor++];
+        }
+      }
+
+      return result;
     });
   }
 
-
-  
   function handleSubmit() {
     const formData = {};
     ridersList.forEach((rider, i) => {
@@ -158,8 +188,9 @@ export default function BikeMatchGame({ user, locked, onSubmit }) {
     submitToGoogleForm('https://docs.google.com/forms/d/e/1FAIpQLSe1-00GxyO8mNZRAM2UPoWDet4DN6zlO71d2om9-Fh3rm-wug/formResponse', formData);
     setIsLocked(true);
     let score = 0;
+    console.log("Scoring... ", ridersList, " vs. ", solution)
     for (let i = 0; i < total; i++) {
-      if (ridersList[i] === solution[i]) {
+      if (ridersList[i].id === solution[i]) {
         score++;
       }
     }
@@ -194,7 +225,6 @@ export default function BikeMatchGame({ user, locked, onSubmit }) {
               onClick={() => {
                 setScore(null);
                 close();
-                // onSubmit(); # Removes the panel
               }} 
             >Close</Button>
           </Box>
@@ -225,24 +255,20 @@ export default function BikeMatchGame({ user, locked, onSubmit }) {
             <Stack style={{ flex: 0.6 , gap:"sm"}}>
               <DndContext sensors={sensors} collisionDetection={closestCenter} onDragEnd={handleDragEnd}>
                 <SortableContext
-                  items={ridersList.map((r) => r.id)}
+                  items={sortableIds}
                   strategy={verticalListSortingStrategy}
                 >
-                  {ridersList.map((rider) => (
-                    <SortableName
-                      key={rider.id}
-                      id={rider.id}
-                      label={rider.label}
-                      locked={rider.locked}
-                      onToggleLock={(id) =>
-                        setRidersList((prev) =>
-                          prev.map((r) =>
-                            r.id === id ? { ...r, locked: !r.locked } : r
-                          )
-                        )
-                      }
-                    />
-                  ))}
+                  {ridersList.map((rider) =>
+                    rider.locked ? (
+                      <LockedName key={rider.id} id={rider.id} rider={rider} />
+                    ) : (
+                      <SortableName
+                        key={rider.id}
+                        id={rider.id}
+                        rider={rider}
+                      />
+                    )
+                  )}
                 </SortableContext>
               </DndContext>
             </Stack>
