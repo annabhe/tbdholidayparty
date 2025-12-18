@@ -75,7 +75,7 @@ export default function BikeMatchGame({ user, locked, onSubmit }) {
     );
   }
 
-  function SortableName({ key, id, rider }) {
+  function SortableName({ id, rider }) {
     const locked = false;
     const { attributes, listeners, setNodeRef, transform, transition} = useSortable({ id, disabled: locked });
 
@@ -100,7 +100,7 @@ export default function BikeMatchGame({ user, locked, onSubmit }) {
           justifyContent: "space-between",
           borderWidth: "2px",
           borderColor: locked ? "#999" : "#444",
-          margin: 16,
+          margin: 8,
         }}
         {...(!locked ? attributes : {})}
         {...(!locked ? listeners : {})}
@@ -126,7 +126,11 @@ export default function BikeMatchGame({ user, locked, onSubmit }) {
         withBorder
         style={{
           minHeight: 100,
-          margin: 16,
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "space-between",
+          borderWidth: "2px",
+          margin: 8,
           opacity: 0.6,
           cursor: "not-allowed",
         }}
@@ -239,11 +243,11 @@ export default function BikeMatchGame({ user, locked, onSubmit }) {
 
       <DndContext sensors={sensors} collisionDetection={closestCenter} onDragEnd={handleDragEnd}>
         <Group grow mt="md" align="flex-start" direction="row" spacing="md">
-          <div style={{ display: 'flex', padding: "0 16px", marginTop: 16, gap: 16, alignItems: 'flex-start' }}>
+          <div style={{ display: 'flex', padding: "0 8", marginTop: 16, gap: 16, alignItems: 'flex-start' }}>
             <Stack style={{ flex: 1 }}>
               {[...Array(total).keys()].map((i) => (
                 <Card key={`bike-${i}`} p="s" mt="xs" withBorder
-                  style={{minHeight: 100, display: 'flex', alignItems: 'center', justifyContent: 'center', margin:16, opacity: isLocked ? 0.6 : 1}}>
+                  style={{minHeight: 100, display: 'flex', alignItems: 'center', justifyContent: 'center', margin:8, opacity: isLocked ? 0.6 : 1}}>
                   <Image
                     src={`${import.meta.env.BASE_URL}/assets/bikes/bike-${String(i+1).padStart(2,'0')}.jpg`}
                     height={100}
@@ -252,23 +256,27 @@ export default function BikeMatchGame({ user, locked, onSubmit }) {
                 </Card>
               ))}
             </Stack>
-            <Stack style={{ flex: 0.6 , gap:"sm"}}>
+            <Stack style={{ flex: 0.4 , gap:"sm"}}>
               <DndContext sensors={sensors} collisionDetection={closestCenter} onDragEnd={handleDragEnd}>
                 <SortableContext
                   items={sortableIds}
                   strategy={verticalListSortingStrategy}
                 >
-                  {ridersList.map((rider) =>
-                    rider.locked ? (
-                      <LockedName key={rider.id} id={rider.id} rider={rider} />
-                    ) : (
-                      <SortableName
-                        key={rider.id}
-                        id={rider.id}
-                        rider={rider}
-                      />
-                    )
-                  )}
+                  {ridersList.map((rider) => (
+                      <div key={rider.id}>
+                      {rider.locked ? (
+                        <LockedName
+                          id={rider.id}
+                          rider={rider}
+                        />
+                      ) : (
+                        <SortableName
+                          id={rider.id}
+                          rider={rider}
+                        />
+                      )}
+                    </div>
+                  ))}
                 </SortableContext>
               </DndContext>
             </Stack>

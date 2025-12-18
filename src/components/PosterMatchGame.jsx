@@ -249,7 +249,7 @@ export default function PosterMatchGame({ user, locked, onSubmit}) {
         <Group grow mt="md" align="flex-start" spacing="md">
           <div style={{ display: 'flex', gap: 8, alignItems: 'flex-start', padding: "0 8px" }}>
 
-            <Stack style={{ flex: 1 }}>
+            <Stack style={{ flex: 0.6 }}>
               {[...Array(total).keys()].map((i) => (
                 <Card key={`poster-${i}`} p="s" mt="xs" withBorder
                   style={{minHeight: 150, display: 'flex', alignItems: 'center', justifyContent: 'center', margin:8, opacity: isLocked ? 0.6 : 1}}>
@@ -266,15 +266,17 @@ export default function PosterMatchGame({ user, locked, onSubmit}) {
               <DndContext sensors={sensors} collisionDetection={closestCenter} onDragEnd={handleDragEnd}>
                 <SortableContext items={sortableIds} strategy={verticalListSortingStrategy}>
                   { selfies.map((selfie) => (
-                    selfie.locked ? (
-                      <LockedSelfie id={selfie.id} selfie={selfie} src={`${import.meta.env.BASE_URL}/assets/selfies/${selfie.id}.jpg`} />
-                    ) : (
-                      <SortableSelfie
-                        id={selfie.id}
-                        selfie={selfie}
-                        src={`${import.meta.env.BASE_URL}/assets/selfies/${selfie.id}.jpg`}
-                      />
-                    )
+                      <div key={selfie.id}>
+                      {selfie.locked ? (
+                        <LockedSelfie id={selfie.id} selfie={selfie} src={`${import.meta.env.BASE_URL}/assets/selfies/${selfie.id}.jpg`} />
+                      ) : (
+                        <SortableSelfie
+                          id={selfie.id}
+                          selfie={selfie}
+                          src={`${import.meta.env.BASE_URL}/assets/selfies/${selfie.id}.jpg`}
+                        />
+                      )}
+                    </div>
                   ))}
                 </SortableContext>
               </DndContext>
