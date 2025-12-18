@@ -1,8 +1,9 @@
 import { useState } from 'react';
-import { Card, Title, Text, Button, Stack, Group, Image, Box} from '@mantine/core';
+import { ActionIcon, Card, Title, Text, Button, Stack, Group, Image, Box} from '@mantine/core';
 import { useDisclosure } from '@mantine/hooks';
 import { useDroppable, DndContext, closestCenter, PointerSensor, useSensor, useSensors } from '@dnd-kit/core';
 import { SortableContext, useSortable, verticalListSortingStrategy } from '@dnd-kit/sortable';
+import { IconLock, IconLockOpen } from "@tabler/icons-react";
 import { CSS } from '@dnd-kit/utilities';
 
 const total = 20
@@ -30,28 +31,8 @@ const entryIds = {
   "bike-20": "entry.2066368981",
 };
 
-const solution = [ "Josh", "Ben Lin", "David M", "Katie", "Andrew", 
-  "Ben Law", "Anna", "Apple", "Alex", "Wenbo", 
-  "Jarrett", "Sten", "Sarah", "Vignesh", "Hardy", 
-  "Constance", "Conor", "Tim", "Nick", "David K"
-]
+const solution = [ "Josh", "Ben Lin", "David M", "Katie", "Andrew", "Ben Law", "Anna", "Apple", "Alex", "Wenbo", "Jarrett", "Sten", "Sarah", "Vignesh", "Hardy", "Constance", "Conor", "Tim", "Nick", "David K"]
 
-function SortableName({ id, label, disabled }) {
-  const { attributes, listeners, setNodeRef, transform, transition } = useSortable({ id, disabled, });
-  const style = { transform: CSS.Transform.toString(transform), transition, cursor: 'grab', touchAction: 'none', opacity: disabled ? 0.6 : 1, };
-  return (
-    <Card ref={setNodeRef} p="xs" mt="xs"  withBorder {...(!disabled ? attributes : {})} {...(!disabled ? listeners : {})}
-      style={{ ...style, minHeight: 100, display: 'flex', alignItems: 'center', justifyContent: 'center',
-        borderWidth: '2px',      // thicker
-        borderColor: '#444',     // darker color
-        borderStyle: 'solid',
-        margin:16
-      }} 
-    >
-      <Text size="lg" weight={800} align="center">{label}</Text>
-    </Card>
-  );
-}
 
 function toGoogleQueryString(obj) {
   return Object.entries(obj)
@@ -70,38 +51,150 @@ const submitToGoogleForm = async (url, data) => {
 };
 
 export default function BikeMatchGame({ user, locked, onSubmit }) {
-  const [ridersList, setRidersList] = useState(riders);
+  const [ridersList, setRidersList] = useState(
+    riders.map((name) => ({
+      id: name,
+      label: name,
+      locked: false,
+    }))
+  );
+  const sortableIds = ridersList
+    .filter((r) => !r.locked)
+    .map((r) => r.id);
+
   const [isLocked, setIsLocked] = useState(false);
   const [score, setScore] = useState(null);
   const [opened, { open, close }] = useDisclosure();
   const sensors = useSensors(useSensor(PointerSensor, { activationConstraint: { distance: 5 } }));
+
+  function toggleRiderLock(id) {
+    setRidersList((prev) =>
+      prev.map((r) =>
+        r.id === id ? { ...r, locked: !r.locked } : r
+      )
+    );
+  }
+
+  function SortableName({ id, rider }) {
+    const locked = false;
+    const { attributes, listeners, setNodeRef, transform, transition} = useSortable({ id, disabled: locked });
+
+    const style = {
+      transform: CSS.Transform.toString(transform),
+      transition,
+      cursor: locked ? "not-allowed" : "grab",
+      opacity: locked ? 0.5 : 1,
+    };
+
+    return (
+      <Card
+        ref={setNodeRef}
+        p="xs"
+        mt="xs"
+        withBorder
+        style={{
+          ...style,
+          minHeight: 100,
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "space-between",
+          borderWidth: "2px",
+          borderColor: locked ? "#999" : "#444",
+          margin: 8,
+        }}
+        {...(!locked ? attributes : {})}
+        {...(!locked ? listeners : {})}
+      >
+        <Text size="lg" weight={800}>
+          {id}
+        </Text>
+
+        <ActionIcon
+          variant="subtle"
+          onClick={() => toggleRiderLock(id)}
+        >
+          {locked ? <IconLock size={20} /> : <IconLockOpen size={20} />}
+        </ActionIcon>
+      </Card>
+    );
+  }
+  function LockedName({ key, id, rider }) {
+    return (
+      <Card
+        p="xs"
+        mt="xs"
+        withBorder
+        style={{
+          minHeight: 100,
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "space-between",
+          borderWidth: "2px",
+          margin: 8,
+          opacity: 0.6,
+          cursor: "not-allowed",
+        }}
+      >
+        <Text size="lg" weight={800}>
+          {id}
+        </Text>
+        <ActionIcon
+          variant="subtle"
+          onClick={() => toggleRiderLock(id)}
+        >
+          {rider.locked ? <IconLock size={20} /> : <IconLockOpen size={20} />}
+        </ActionIcon>
+      </Card>
+    );
+  }
 
   function handleDragEnd(event) {
     const { active, over } = event;
     if (!over || active.id === over.id) return;
 
     setRidersList((prev) => {
-      const oldIndex = prev.indexOf(active.id);
-      const newIndex = prev.indexOf(over.id);
-      const newArray = [...prev];
-      newArray.splice(oldIndex, 1);
-      newArray.splice(newIndex, 0, active.id);
-      return newArray;
+      const locked = [];
+      const unlocked = [];
+
+      prev.forEach((item, index) => {
+        item.locked
+          ? locked.push({ index, item })
+          : unlocked.push(item);
+      });
+
+      const from = unlocked.findIndex((i) => i.id === active.id);
+      const to = unlocked.findIndex((i) => i.id === over.id);
+
+      const reordered = [...unlocked];
+      const [moved] = reordered.splice(from, 1);
+      reordered.splice(to, 0, moved);
+
+      const result = [...prev];
+      let cursor = 0;
+
+      for (let i = 0; i < result.length; i++) {
+        if (!locked.some((l) => l.index === i)) {
+          result[i] = reordered[cursor++];
+        }
+      }
+
+      return result;
     });
   }
-  
+
   function handleSubmit() {
     const formData = {};
     ridersList.forEach((rider, i) => {
-      const bikeKey = `bike-${String(i + 1).padStart(2,'0')}`;
-      formData[entryIds[bikeKey]] = rider;
+      const bikeKey = `bike-${String(i + 1).padStart(2, "0")}`;
+      formData[entryIds[bikeKey]] = rider.label;
     });
     formData["entry.465261784"] = user.name; // user name
     submitToGoogleForm('https://docs.google.com/forms/d/e/1FAIpQLSe1-00GxyO8mNZRAM2UPoWDet4DN6zlO71d2om9-Fh3rm-wug/formResponse', formData);
     setIsLocked(true);
     let score = 0;
+    console.log("Scoring... ", ridersList, " vs. ", solution)
     for (let i = 0; i < total; i++) {
-      if (ridersList[i] === solution[i]) {
+      if (ridersList[i].id === solution[i]) {
         score++;
       }
     }
@@ -128,7 +221,7 @@ export default function BikeMatchGame({ user, locked, onSubmit }) {
           <Box style={{ opacity:1, textAlign: "center", backgroundColor: "gold", borderRadius: "10px"}}>
             <Title size="xl" weight={600}>Congratulations!</Title>
             <Title size="lg" style={{ marginTop: "50px",marginLeft: "10px", marginRight: "10px" }}>
-              You could match {score}/16 TBD riders with their bikes!
+              You could match {score}/{total} TBD riders with their bikes!
             </Title>
             <Button 
               variant="outline" 
@@ -136,7 +229,6 @@ export default function BikeMatchGame({ user, locked, onSubmit }) {
               onClick={() => {
                 setScore(null);
                 close();
-                // onSubmit(); # Removes the panel
               }} 
             >Close</Button>
           </Box>
@@ -151,25 +243,39 @@ export default function BikeMatchGame({ user, locked, onSubmit }) {
 
       <DndContext sensors={sensors} collisionDetection={closestCenter} onDragEnd={handleDragEnd}>
         <Group grow mt="md" align="flex-start" direction="row" spacing="md">
-          <div style={{ display: 'flex', padding: "0 16px", marginTop: 16, gap: 16, alignItems: 'flex-start' }}>
+          <div style={{ display: 'flex', padding: "0 8", marginTop: 16, gap: 16, alignItems: 'flex-start' }}>
             <Stack style={{ flex: 1 }}>
               {[...Array(total).keys()].map((i) => (
                 <Card key={`bike-${i}`} p="s" mt="xs" withBorder
-                  style={{minHeight: 100, display: 'flex', alignItems: 'center', justifyContent: 'center', margin:16, opacity: isLocked ? 0.6 : 1}}>
+                  style={{minHeight: 100, display: 'flex', alignItems: 'center', justifyContent: 'center', margin:8, opacity: isLocked ? 0.6 : 1}}>
                   <Image
                     src={`${import.meta.env.BASE_URL}/assets/bikes/bike-${String(i+1).padStart(2,'0')}.jpg`}
                     height={100}
                     fit="contain"
                   />
-                  {/* <Text size="xs" mt="xs"> {ridersList[i]}'s bike?</Text> */}
                 </Card>
               ))}
             </Stack>
-            <Stack style={{ flex: 0.6 , gap:"sm"}}>
+            <Stack style={{ flex: 0.4 , gap:"sm"}}>
               <DndContext sensors={sensors} collisionDetection={closestCenter} onDragEnd={handleDragEnd}>
-                <SortableContext items={ridersList} strategy={verticalListSortingStrategy}>
+                <SortableContext
+                  items={sortableIds}
+                  strategy={verticalListSortingStrategy}
+                >
                   {ridersList.map((rider) => (
-                    <SortableName key={rider} id={rider} label={rider} disabled={isLocked} />
+                      <div key={rider.id}>
+                      {rider.locked ? (
+                        <LockedName
+                          id={rider.id}
+                          rider={rider}
+                        />
+                      ) : (
+                        <SortableName
+                          id={rider.id}
+                          rider={rider}
+                        />
+                      )}
+                    </div>
                   ))}
                 </SortableContext>
               </DndContext>
